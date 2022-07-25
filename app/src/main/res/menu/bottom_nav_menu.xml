@@ -7,9 +7,9 @@
         android:title="@string/title_friend" />
 
     <item
-        android:id="@+id/navigation_chat_list"
+        android:id="@+id/navigation_chat_room"
         android:icon="@drawable/ic_dashboard_black_24dp"
-        android:title="@string/title_chat_list" />
+        android:title="@string/title_chat_room" />
 
     <item
         android:id="@+id/navigation_notifications"

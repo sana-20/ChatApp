@@ -12,10 +12,10 @@
         tools:layout="@layout/fragment_friend" />
 
     <fragment
-        android:id="@+id/navigation_chat_list"
-        android:name="com.example.chatapp.ui.chat.ChatListFragment"
-        android:label="@string/title_chat_list"
-        tools:layout="@layout/fragment_chat_list" >
+        android:id="@+id/navigation_chat_room"
+        android:name="com.example.chatapp.ui.chat.ChatRoomFragment"
+        android:label="@string/title_chat_room"
+        tools:layout="@layout/fragment_chat_room" >
         <action
             android:id="@+id/action_to_chat"
             app:destination="@id/navigation_chat" />

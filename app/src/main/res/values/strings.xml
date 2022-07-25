@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">ChatApp</string>
     <string name="title_friend">친구목록</string>
-    <string name="title_chat_list">채팅목록</string>
+    <string name="title_chat_room">채팅목록</string>
     <string name="title_notifications">더보기</string>
     <string name="title_chat">채팅방</string>
 </resources>
