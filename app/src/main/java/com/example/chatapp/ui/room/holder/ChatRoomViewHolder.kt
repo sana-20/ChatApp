@@ -1,4 +1,4 @@
-package com.example.chatapp.ui.chat.holder
+package com.example.chatapp.ui.room.holder
 
 import android.view.LayoutInflater
 import android.view.View
@@ -9,7 +9,7 @@ import com.example.chatapp.R
 import com.example.chatapp.common.HolderEvent
 import com.example.chatapp.common.ViewHolder
 import com.example.chatapp.databinding.ItemChatRoomBinding
-import com.example.chatapp.ui.chat.model.ChatRoom
+import com.example.chatapp.ui.room.model.ChatRoom
 
 class ChatRoomViewHolder(view: View) :
    ViewHolder<ChatRoom, ChatRoomViewHolder.Event>(view) {
