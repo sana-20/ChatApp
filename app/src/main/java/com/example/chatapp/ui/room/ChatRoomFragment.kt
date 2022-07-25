@@ -1,7 +1,6 @@
-package com.example.chatapp.ui.chat
+package com.example.chatapp.ui.room
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,8 +11,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.chatapp.R
 import com.example.chatapp.databinding.FragmentChatRoomBinding
-import com.example.chatapp.ui.chat.holder.ChatRoomViewHolder
-import com.example.chatapp.ui.chat.model.ChatRoom
+import com.example.chatapp.ui.room.holder.ChatRoomViewHolder
+import com.example.chatapp.ui.room.model.ChatRoom
 import kotlinx.coroutines.launch
 
 class ChatRoomFragment : Fragment(), ChatRoomViewHolder.Event {
@@ -44,11 +43,7 @@ class ChatRoomFragment : Fragment(), ChatRoomViewHolder.Event {
 
         lifecycleScope.launch {
             chatRoomViewModel.uiState.collect {
-                val list: MutableList<ChatRoom> = mutableListOf()
-                it.forEach { chatRoomModel ->
-                    list.add(ChatRoom(chatRoomModel.name, chatRoomModel.profile))
-                }
-                adapter.submitList(list)
+                adapter.submitList(it)
             }
         }
     }
@@ -59,7 +54,8 @@ class ChatRoomFragment : Fragment(), ChatRoomViewHolder.Event {
     }
 
     override fun onClickChatRoom(item: ChatRoom) {
-        findNavController().navigate(R.id.action_to_chat)
+        val action = ChatRoomFragmentDirections.actionToChat(item.userName)
+        findNavController().navigate(action)
     }
 
 }

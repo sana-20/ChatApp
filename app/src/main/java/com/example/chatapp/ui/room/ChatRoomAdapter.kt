@@ -1,13 +1,13 @@
-package com.example.chatapp.ui.chat
+package com.example.chatapp.ui.room
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
-import com.example.chatapp.ui.chat.holder.ChatRoomViewHolder
-import com.example.chatapp.ui.chat.holder.ChatRoomViewHolder.Companion.DIFF
-import com.example.chatapp.ui.chat.model.ChatRoom
+import com.example.chatapp.ui.room.holder.ChatRoomViewHolder
+import com.example.chatapp.ui.room.holder.ChatRoomViewHolder.Companion.DIFF
+import com.example.chatapp.ui.room.model.ChatRoom
 
 class ChatRoomAdapter(
-    private val event: ChatRoomViewHolder.Event
+    private val chatRoomEvent: ChatRoomViewHolder.Event
 ) : ListAdapter<ChatRoom, ChatRoomViewHolder>(DIFF) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatRoomViewHolder {
@@ -15,7 +15,7 @@ class ChatRoomAdapter(
     }
 
     override fun onBindViewHolder(holder: ChatRoomViewHolder, position: Int) {
-        holder.bind(getItem(position), event)
+        holder.bind(getItem(position), chatRoomEvent)
     }
 
 }
