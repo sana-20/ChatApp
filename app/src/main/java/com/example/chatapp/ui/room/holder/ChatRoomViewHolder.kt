@@ -22,6 +22,7 @@ class ChatRoomViewHolder(view: View) :
             .into(binding.imageView)
 
         binding.tvName.text = item.name
+        binding.tvMessage.text = item.lastMessage
 
         binding.root.setOnClickListener {
             event.onClickChatRoom(item)

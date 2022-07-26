@@ -15,6 +15,6 @@ interface ChatDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertChat(chatEntity: ChatEntity)
 
-    @Query("SELECT * FROM $TABLE_NAME_CHAT ORDER BY id LIMIT 1")
-    suspend fun getLastChat(): ChatEntity
+    @Query("SELECT * FROM $TABLE_NAME_CHAT ORDER BY id DESC LIMIT 1")
+    fun getLastChat(): Flow<ChatEntity>
 }
