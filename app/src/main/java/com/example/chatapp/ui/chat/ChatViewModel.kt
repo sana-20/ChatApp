@@ -69,6 +69,7 @@ class ChatViewModel @Inject constructor(
     fun getAllMessage() {
         viewModelScope.launch {
             getAllChatsUseCase.invoke()
+                .flowOn(Dispatchers.IO)
                 .collect {
                     val chats = chatMapper.map(it, name, profile)
                     _uiState.value = chats
