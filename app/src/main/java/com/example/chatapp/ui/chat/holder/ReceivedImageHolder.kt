@@ -17,13 +17,14 @@ class ReceivedImageHolder(view: View) :
     private val binding = ItemReceivedImageBinding.bind(view)
 
     override fun bind(item: Chat.Image, event: Event) {
+        binding.tvName.text = item.userName
+
         Glide.with(binding.imgMessage)
-            .load(item.url)
+            .load(item.message)
             .into(binding.imgMessage)
 
-        //TODO: 채팅방에서 가져온 데이터 활용
         Glide.with(binding.imgProfile)
-            .load("https://search.pstatic.net/common?type=f&size=210x236&quality=90&direct=true&src=https%3A%2F%2Fcsearch-phinf.pstatic.net%2F20220713_200%2F16576840580230Fwu8_JPEG%2F19cdc6c7dde407af7c0c8ea680c9004f.jpg")
+            .load(item.profile)
             .into(binding.imgProfile)
     }
 
