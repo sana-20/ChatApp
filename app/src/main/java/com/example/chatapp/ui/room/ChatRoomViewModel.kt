@@ -32,6 +32,9 @@ class ChatRoomViewModel @Inject constructor(
                     }
                 }
                 .flowOn(Dispatchers.IO)
+                .catch {
+
+                }
                 .collect {
                     _uiState.value = it
                 }

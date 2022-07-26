@@ -75,7 +75,6 @@ class ChatFragment : Fragment(), MessageListener, ReceivedTextHolder.Event,
 
         lifecycleScope.launch {
             chatViewModel.uiState.collect {
-                Log.d(TAG, it.toString())
                 chatAdapter.submitList(it) {
                     binding.recyclerChat.scrollToPosition(chatAdapter.itemCount - 1)
                 }

@@ -10,3 +10,8 @@ data class ChatRoomModel(
     val userName: String,
     val profile: String
 )
+
+data class FriendModel(
+    val name: String,
+    val profile: String
+)
