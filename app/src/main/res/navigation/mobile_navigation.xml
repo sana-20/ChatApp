@@ -37,6 +37,11 @@
             app:argType="string"
             android:defaultValue=""
             />
+        <argument
+            android:name="profile"
+            app:argType="string"
+            android:defaultValue=""
+            />
     </fragment>
 
 </navigation>

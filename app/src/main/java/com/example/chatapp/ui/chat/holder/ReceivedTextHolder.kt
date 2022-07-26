@@ -18,10 +18,11 @@ class ReceivedTextHolder(view: View) :
     private val binding = ItemReceivedTextBinding.bind(view)
 
     override fun bind(item: Chat.Text, event: Event) {
+        binding.tvName.text = item.userName
         binding.tvMessage.text = item.message
 
         Glide.with(binding.imgProfile)
-            .load("https://search.pstatic.net/common?type=f&size=210x236&quality=90&direct=true&src=https%3A%2F%2Fcsearch-phinf.pstatic.net%2F20220713_200%2F16576840580230Fwu8_JPEG%2F19cdc6c7dde407af7c0c8ea680c9004f.jpg")
+            .load(item.profile)
             .into(binding.imgProfile)
     }
 

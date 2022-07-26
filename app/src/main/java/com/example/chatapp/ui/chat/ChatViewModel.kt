@@ -9,6 +9,7 @@ import com.example.chatapp.domain.AddChatUseCase
 import com.example.chatapp.domain.GetAllChatsUseCase
 import com.example.chatapp.socket.SocketMessageUtil
 import com.example.chatapp.socket.WebSocketManager
+import com.example.chatapp.ui.chat.mapper.ChatMapper
 import com.example.chatapp.ui.chat.model.Chat
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -21,19 +22,23 @@ import javax.inject.Inject
 @HiltViewModel
 class ChatViewModel @Inject constructor(
     private val addChatUseCase: AddChatUseCase,
-    private val getAllChatsUseCase: GetAllChatsUseCase
+    private val getAllChatsUseCase: GetAllChatsUseCase,
+    private val chatMapper: ChatMapper
 ) : ViewModel() {
 
     private val _message = MutableStateFlow("")
 
-    private val _name = MutableStateFlow("")
+    private lateinit var name : String
+
+    private lateinit var profile : String
 
     private val _uiState = MutableStateFlow<List<Chat>>(emptyList())
     val uiState: StateFlow<List<Chat>> = _uiState
 
 
-    fun setFriendName(name: String) {
-        _name.value = name
+    fun setData(safeArgs: ChatFragmentArgs) {
+        name = safeArgs.userName
+        profile = safeArgs.profile
     }
 
     fun setMessage(message: String) {
@@ -65,7 +70,8 @@ class ChatViewModel @Inject constructor(
         viewModelScope.launch {
             getAllChatsUseCase.invoke()
                 .collect {
-                    _uiState.value = it
+                    val chats = chatMapper.map(it, name, profile)
+                    _uiState.value = chats
                 }
         }
     }

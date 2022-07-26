@@ -54,7 +54,7 @@ class ChatRoomFragment : Fragment(), ChatRoomViewHolder.Event {
     }
 
     override fun onClickChatRoom(item: ChatRoom) {
-        val action = ChatRoomFragmentDirections.actionToChat(item.userName)
+        val action = ChatRoomFragmentDirections.actionToChat(item.userName, item.profile)
         findNavController().navigate(action)
     }
 

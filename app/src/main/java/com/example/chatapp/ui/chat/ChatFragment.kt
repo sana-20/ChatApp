@@ -7,12 +7,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.coroutineScope
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,14 +18,7 @@ import com.example.chatapp.socket.WebSocketManager
 import com.example.chatapp.ui.chat.holder.ReceivedImageHolder
 import com.example.chatapp.ui.chat.holder.ReceivedTextHolder
 import com.example.chatapp.ui.chat.holder.SentMessageHolder
-import com.example.chatapp.ui.room.ChatRoomFragment
-import com.example.chatapp.ui.room.ChatRoomViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import org.json.JSONObject
 
 class ChatFragment : Fragment(), MessageListener, ReceivedTextHolder.Event,
     ReceivedImageHolder.Event, SentMessageHolder.Event {
@@ -55,7 +44,7 @@ class ChatFragment : Fragment(), MessageListener, ReceivedTextHolder.Event,
 
         chatViewModel.connect()
 
-        chatViewModel.setFriendName(safeArgs.userName)
+        chatViewModel.setData(safeArgs)
 
         chatViewModel.getAllMessage()
 
