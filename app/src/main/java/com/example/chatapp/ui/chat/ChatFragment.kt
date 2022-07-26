@@ -12,12 +12,16 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.chatapp.data.local.MessageType
 import com.example.chatapp.databinding.FragmentChatBinding
 import com.example.chatapp.socket.MessageListener
+import com.example.chatapp.socket.SocketMessageUtil
 import com.example.chatapp.socket.WebSocketManager
 import com.example.chatapp.ui.chat.holder.ReceivedImageHolder
 import com.example.chatapp.ui.chat.holder.ReceivedTextHolder
 import com.example.chatapp.ui.chat.holder.SentMessageHolder
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class ChatFragment : Fragment(), MessageListener, ReceivedTextHolder.Event,
@@ -33,6 +37,8 @@ class ChatFragment : Fragment(), MessageListener, ReceivedTextHolder.Event,
 
     private val safeArgs: ChatFragmentArgs by navArgs()
 
+    private val webSocketManager = WebSocketManager()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -40,9 +46,10 @@ class ChatFragment : Fragment(), MessageListener, ReceivedTextHolder.Event,
     ): View {
         _binding = FragmentChatBinding.inflate(inflater, container, false)
 
-        WebSocketManager.init(this)
-
-        chatViewModel.connect()
+        webSocketManager.init(this)
+        CoroutineScope(Dispatchers.IO).launch {
+            webSocketManager.connect()
+        }
 
         chatViewModel.setData(safeArgs)
 
@@ -76,8 +83,10 @@ class ChatFragment : Fragment(), MessageListener, ReceivedTextHolder.Event,
         }
 
         binding.btnSend.setOnClickListener {
-            chatViewModel.sendMessage()
-            binding.editMessage.text.clear()
+            val text = binding.editMessage.text
+            webSocketManager.sendMessage(text.toString())
+            chatViewModel.saveMessage(text.toString(), MessageType.SEND)
+            text.clear()
         }
 
         binding.editMessage.addTextChangedListener(object : TextWatcher {
@@ -90,7 +99,7 @@ class ChatFragment : Fragment(), MessageListener, ReceivedTextHolder.Event,
             }
 
             override fun afterTextChanged(p0: Editable?) {
-                chatViewModel.setMessage(p0.toString())
+                binding.btnSend.isEnabled = p0.toString().isNotEmpty()
             }
         })
     }
@@ -98,7 +107,7 @@ class ChatFragment : Fragment(), MessageListener, ReceivedTextHolder.Event,
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-        chatViewModel.close()
+        webSocketManager.close()
     }
 
     override fun onConnectSuccess() {
@@ -114,6 +123,7 @@ class ChatFragment : Fragment(), MessageListener, ReceivedTextHolder.Event,
     }
 
     override fun onMessage(text: String?) {
-        chatViewModel.receivedMessage(text)
+        if (text.isNullOrEmpty()) return
+        chatViewModel.saveMessage(text, SocketMessageUtil.getMessageType(text))
     }
 }

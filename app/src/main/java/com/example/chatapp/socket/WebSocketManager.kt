@@ -5,15 +5,15 @@ import okhttp3.*
 import okio.ByteString
 import  java.util.concurrent.TimeUnit
 
-object WebSocketManager {
+class WebSocketManager {
+
+    private val MAX_NUM = 5  // Maximum number of reconnections
+
+    private val MILLIS = 5000  // Reconnection interval, milliseconds
+
+    private val SERVER_URL = "wss://yxpx35wxx4.execute-api.ap-northeast-2.amazonaws.com/production"
 
     private val TAG = WebSocketManager::class.java.simpleName
-
-    private const val MAX_NUM = 5  // Maximum number of reconnections
-
-    private const val MILLIS = 5000  // Reconnection interval, milliseconds
-
-    private const val SERVER_URL = "wss://yxpx35wxx4.execute-api.ap-northeast-2.amazonaws.com/production"
 
     private lateinit var client: OkHttpClient
 
@@ -62,10 +62,10 @@ object WebSocketManager {
         }
     }
 
-    fun isConnect(): Boolean = isConnect
+    private fun isConnect(): Boolean = isConnect
 
     fun sendMessage(text: String): Boolean {
-        return if (!isConnect()) false else mWebSocket.send(text)
+        return if (!isConnect()) false else mWebSocket.send(SocketMessageUtil.setSendMessage(text))
     }
 
     fun close() {
