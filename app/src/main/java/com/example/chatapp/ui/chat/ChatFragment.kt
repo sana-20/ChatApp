@@ -55,13 +55,23 @@ class ChatFragment : Fragment(), MessageListener, ReceivedTextHolder.Event,
         super.onViewCreated(view, savedInstanceState)
 
         val chatAdapter = ChatAdapter(this, this, this)
-        binding.recyclerChat.adapter = chatAdapter
-        binding.recyclerChat.layoutManager = LinearLayoutManager(requireContext())
+        binding.recyclerChat.apply {
+            adapter = chatAdapter
+            layoutManager = LinearLayoutManager(requireContext())
+            addOnLayoutChangeListener { p0, p1, p2, p3, p4, p5, p6, p7, p8 ->
+                scrollToPosition(
+                    chatAdapter.itemCount - 1
+                )
+            }
+        }
+
 
         lifecycleScope.launch {
             chatViewModel.uiState.collect {
                 Log.d(TAG, it.toString())
-                chatAdapter.submitList(it)
+                chatAdapter.submitList(it) {
+                    binding.recyclerChat.scrollToPosition(chatAdapter.itemCount - 1)
+                }
             }
         }
 
