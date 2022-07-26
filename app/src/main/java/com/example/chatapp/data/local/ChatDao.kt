@@ -16,5 +16,5 @@ interface ChatDao {
     suspend fun insertChat(chatEntity: ChatEntity)
 
     @Query("SELECT * FROM $TABLE_NAME_CHAT ORDER BY id LIMIT 1")
-    fun getLastChat(): ChatEntity
+    suspend fun getLastChat(): ChatEntity
 }
