@@ -14,5 +14,5 @@ data class ChatEntity(
 )
 
 enum class MessageType {
-    RECEIVED, SEND
+    RECEIVED_IMAGE, RECEIVED_TEXT, SEND
 }
