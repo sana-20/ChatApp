@@ -17,7 +17,7 @@ class ChatRepository @Inject constructor(
         dao.insertChat(chatEntity)
     }
 
-    suspend fun getLastChat(): ChatEntity {
+    fun getLastChat(): Flow<ChatEntity> {
         return dao.getLastChat()
     }
 
