@@ -1,5 +1,6 @@
 package com.example.chatapp.ui.chat
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.chatapp.data.local.ChatEntity
@@ -14,6 +15,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -53,7 +55,7 @@ class ChatViewModel @Inject constructor(
                     ChatEntity(
                         message = SocketMessageUtil.getReceivedMessage(text, "message"),
                         imageUrl = "",
-                        type =type
+                        type = type
                     )
                 )
             }
@@ -71,6 +73,7 @@ class ChatViewModel @Inject constructor(
 
     private fun saveMessage(chat: ChatEntity) {
         CoroutineScope(Dispatchers.IO).launch {
+            Log.d("로그", "saveMessage")
             addChatUseCase.invoke(chat)
         }
     }
@@ -79,6 +82,9 @@ class ChatViewModel @Inject constructor(
         viewModelScope.launch {
             getAllChatsUseCase.invoke()
                 .flowOn(Dispatchers.IO)
+                .catch {
+
+                }
                 .collect {
                     val chats = chatMapper.map(it, name, profile)
                     _uiState.value = chats
