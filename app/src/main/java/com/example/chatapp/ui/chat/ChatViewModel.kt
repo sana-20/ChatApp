@@ -1,22 +1,21 @@
 package com.example.chatapp.ui.chat
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.chatapp.data.local.ChatEntity
 import com.example.chatapp.data.local.MessageType
 import com.example.chatapp.domain.AddChatUseCase
 import com.example.chatapp.domain.GetAllChatsUseCase
+import com.example.chatapp.socket.SocketMessageUtil
 import com.example.chatapp.socket.WebSocketManager
 import com.example.chatapp.ui.chat.model.Chat
-import com.example.chatapp.ui.room.model.ChatRoom
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import org.json.JSONObject
 import javax.inject.Inject
 
 @HiltViewModel
@@ -44,12 +43,8 @@ class ChatViewModel @Inject constructor(
     fun sendMessage() {
         if (_message.value.isEmpty()) return
 
-        //TODO: SocketMessageUtil 이용
-        val json = JSONObject()
-        json.put("action", "sendmessage")
-        json.put("message", _message.value)
-
-        WebSocketManager.sendMessage(json.toString())
+        val jsonString = SocketMessageUtil.setSendMessage(_message.value)
+        WebSocketManager.sendMessage(jsonString)
 
         saveMessage(
             ChatEntity(
@@ -87,15 +82,34 @@ class ChatViewModel @Inject constructor(
 
     fun receivedMessage(text: String?) {
         if (text.isNullOrEmpty()) return
-
-        saveMessage(
-            ChatEntity(
-                message = JSONObject(text).get("message").toString(),
-                imageUrl = "",
-                type = MessageType.RECEIVED
-            )
-        )
+        Log.d("로그", text)
+        saveReceivedMessage(text)
     }
 
+    private fun saveReceivedMessage(text: String) {
+        when (SocketMessageUtil.getMessageType(text)) {
+            MessageType.RECEIVED_IMAGE -> {
+                saveMessage(
+                    ChatEntity(
+                        message = "",
+                        imageUrl = SocketMessageUtil.getReceivedMessage(text, "image"),
+                        type = MessageType.RECEIVED_IMAGE
+                    )
+                )
+            }
+            MessageType.RECEIVED_TEXT -> {
+                saveMessage(
+                    ChatEntity(
+                        message = SocketMessageUtil.getReceivedMessage(text, "message"),
+                        imageUrl = "",
+                        type = MessageType.RECEIVED_TEXT
+                    )
+                )
+            }
+            else -> {
+
+            }
+        }
+    }
 
 }

@@ -9,7 +9,8 @@ class ChatMapper @Inject constructor() {
     fun map(from: List<ChatEntity>): List<Chat> {
         return from.map {
             when (it.type) {
-                MessageType.RECEIVED -> Chat.Text(id = it.id, it.message.toString())
+                MessageType.RECEIVED_IMAGE -> Chat.Image(id = it.id, it.imageUrl.toString())
+                MessageType.RECEIVED_TEXT -> Chat.Text(id = it.id, it.message.toString())
                 MessageType.SEND -> Chat.MyText(id = it.id, it.message.toString())
             }
         }
