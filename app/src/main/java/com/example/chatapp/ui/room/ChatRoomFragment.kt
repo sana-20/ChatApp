@@ -9,8 +9,8 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.chatapp.R
 import com.example.chatapp.databinding.FragmentChatRoomBinding
+import com.example.chatapp.ui.UiState
 import com.example.chatapp.ui.room.holder.ChatRoomViewHolder
 import com.example.chatapp.ui.room.model.ChatRoom
 import kotlinx.coroutines.launch
@@ -29,9 +29,7 @@ class ChatRoomFragment : Fragment(), ChatRoomViewHolder.Event {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentChatRoomBinding.inflate(inflater, container, false)
-        val root: View = binding.root
-
-        return root
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -43,7 +41,11 @@ class ChatRoomFragment : Fragment(), ChatRoomViewHolder.Event {
 
         lifecycleScope.launch {
             chatRoomViewModel.uiState.collect {
-                adapter.submitList(it)
+                when (it) {
+                    UiState.Error -> {}
+                    UiState.Loading -> {}
+                    is UiState.Success -> adapter.submitList(it.data)
+                }
             }
         }
     }

@@ -1,6 +1,8 @@
 package com.example.chatapp.domain
 
+import com.example.chatapp.common.map
 import com.example.chatapp.data.ChatRoomRepository
+import com.example.chatapp.data.remote.BaseResult
 import com.example.chatapp.domain.dto.ChatRoomDto
 import com.example.chatapp.domain.mapper.ChatRoomMapper
 import kotlinx.coroutines.flow.Flow
@@ -11,9 +13,11 @@ class GetChatRoomUseCase @Inject constructor(
     private val chatRoomRepository: ChatRoomRepository,
     private val chatRoomMapper: ChatRoomMapper
 ) {
-    fun invoke(type: String): Flow<List<ChatRoomDto>> {
+    fun invoke(type: String): Flow<BaseResult<List<ChatRoomDto>>> {
         return chatRoomRepository.getChatRoom(type).map {
-            chatRoomMapper.map(it)
+            it.map { list ->
+                chatRoomMapper.map(list)
+            }
         }
     }
 }

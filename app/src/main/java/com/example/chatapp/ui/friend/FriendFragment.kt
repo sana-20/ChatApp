@@ -1,23 +1,17 @@
 package com.example.chatapp.ui.friend
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.chatapp.databinding.FragmentFriendBinding
+import com.example.chatapp.ui.UiState
 import com.example.chatapp.ui.friend.holder.FriendHeaderHolder
 import com.example.chatapp.ui.friend.holder.FriendProfileHolder
-import com.example.chatapp.ui.friend.model.Friend
-import com.example.chatapp.ui.room.ChatRoomAdapter
-import com.example.chatapp.ui.room.holder.ChatRoomViewHolder
-import com.example.chatapp.ui.room.model.ChatRoom
 import kotlinx.coroutines.launch
 
 class FriendFragment : Fragment(), FriendProfileHolder.Event,
@@ -48,7 +42,11 @@ class FriendFragment : Fragment(), FriendProfileHolder.Event,
 
         lifecycleScope.launch {
             friendViewModel.uiState.collect {
-                adapter.submitList(it)
+                when (it) {
+                    UiState.Error -> {}
+                    UiState.Loading -> {}
+                    is UiState.Success -> adapter.submitList(it.data)
+                }
             }
         }
     }
