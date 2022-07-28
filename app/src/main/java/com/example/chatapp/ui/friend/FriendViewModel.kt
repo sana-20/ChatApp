@@ -24,7 +24,7 @@ class FriendViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<UiState<List<Friend>>>(UiState.Loading)
     val uiState: StateFlow<UiState<List<Friend>>> = _uiState
 
-    init {
+    fun load() {
         viewModelScope.launch {
             val friendsFlow = friendUseCase.invoke(FriendType.FRIENDS)
             val favoriteFlow = friendUseCase.invoke(FriendType.FAVORITE)

@@ -1,6 +1,5 @@
 package com.example.chatapp.ui.chat
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.chatapp.data.local.ChatEntity
@@ -8,6 +7,7 @@ import com.example.chatapp.data.local.MessageType
 import com.example.chatapp.domain.AddChatUseCase
 import com.example.chatapp.domain.GetAllChatsUseCase
 import com.example.chatapp.socket.SocketMessageUtil
+import com.example.chatapp.ui.UiState
 import com.example.chatapp.ui.chat.mapper.ChatMapper
 import com.example.chatapp.ui.chat.model.Chat
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,69 +27,62 @@ class ChatViewModel @Inject constructor(
     private val chatMapper: ChatMapper
 ) : ViewModel() {
 
-    private lateinit var name : String
+    private lateinit var name: String
 
-    private lateinit var profile : String
+    private lateinit var profile: String
 
-    private val _uiState = MutableStateFlow<List<Chat>>(emptyList())
-    val uiState: StateFlow<List<Chat>> = _uiState
+    private val _uiState = MutableStateFlow<UiState<List<Chat>>>(UiState.Loading)
+    val uiState: StateFlow<UiState<List<Chat>>> = _uiState
 
     fun setData(safeArgs: ChatFragmentArgs) {
         name = safeArgs.userName
         profile = safeArgs.profile
     }
 
-    fun saveMessage(text: String, type: MessageType) {
-        when (type) {
-            MessageType.RECEIVED_IMAGE -> {
-                saveMessage(
-                    ChatEntity(
-                        message = "",
-                        imageUrl = SocketMessageUtil.getReceivedMessage(text, "image"),
-                        type = type
-                    )
-                )
-            }
-            MessageType.RECEIVED_TEXT -> {
-                saveMessage(
-                    ChatEntity(
-                        message = SocketMessageUtil.getReceivedMessage(text, "message"),
-                        imageUrl = "",
-                        type = type
-                    )
-                )
-            }
-            MessageType.SEND -> {
-                saveMessage(
-                    ChatEntity(
-                        message = text,
-                        imageUrl = "",
-                        type = type
-                    )
-                )
-            }
-        }
-    }
-
-    private fun saveMessage(chat: ChatEntity) {
-        CoroutineScope(Dispatchers.IO).launch {
-            Log.d("로그", "saveMessage")
-            addChatUseCase.invoke(chat)
-        }
-    }
-
-    fun getAllMessage() {
+    fun load() {
         viewModelScope.launch {
             getAllChatsUseCase.invoke()
                 .flowOn(Dispatchers.IO)
                 .catch {
-
+                    _uiState.value = UiState.Error
                 }
                 .collect {
                     val chats = chatMapper.map(it, name, profile)
-                    _uiState.value = chats
+                    _uiState.value = UiState.Success(chats)
                 }
         }
     }
+
+    fun sendButtonClicked(text: String) {
+        saveMessage(text, MessageType.SEND)
+    }
+
+    fun messageReceived(text: String) {
+        saveMessage(text, SocketMessageUtil.getMessageType(text))
+    }
+
+    private fun saveMessage(text: String, type: MessageType) {
+        val chat = mapTextToChatEntity(text, type)
+        CoroutineScope(Dispatchers.IO).launch {
+            addChatUseCase.invoke(chat)
+        }
+    }
+
+    private fun mapTextToChatEntity(text: String, type: MessageType): ChatEntity {
+        return when (type) {
+            MessageType.RECEIVED_IMAGE -> ChatEntity(
+                message = "",
+                imageUrl = SocketMessageUtil.getReceivedMessage(text, "image"),
+                type = type
+            )
+            MessageType.RECEIVED_TEXT -> ChatEntity(
+                message = SocketMessageUtil.getReceivedMessage(text, "message"),
+                imageUrl = "",
+                type = type
+            )
+            MessageType.SEND -> ChatEntity(message = text, imageUrl = "", type = type)
+        }
+    }
+
 
 }

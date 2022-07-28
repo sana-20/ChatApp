@@ -23,6 +23,8 @@ class ChatRoomFragment : Fragment(), ChatRoomViewHolder.Event {
 
     private val chatRoomViewModel: ChatRoomViewModel by activityViewModels()
 
+    private lateinit var adapter: ChatRoomAdapter
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -35,10 +37,16 @@ class ChatRoomFragment : Fragment(), ChatRoomViewHolder.Event {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val adapter = ChatRoomAdapter(this)
-        binding.recyclerView.adapter = adapter
-        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        setAdapter()
+        observeState()
+        load()
+    }
 
+    private fun load() {
+        chatRoomViewModel.load()
+    }
+
+    private fun observeState() {
         lifecycleScope.launch {
             chatRoomViewModel.uiState.collect {
                 when (it) {
@@ -48,6 +56,12 @@ class ChatRoomFragment : Fragment(), ChatRoomViewHolder.Event {
                 }
             }
         }
+    }
+
+    private fun setAdapter() {
+        adapter = ChatRoomAdapter(this)
+        binding.recyclerView.adapter = adapter
+        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
     }
 
     override fun onDestroyView() {

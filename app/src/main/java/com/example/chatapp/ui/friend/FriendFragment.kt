@@ -23,23 +23,30 @@ class FriendFragment : Fragment(), FriendProfileHolder.Event,
 
     private val friendViewModel: FriendViewModel by activityViewModels()
 
+    private lateinit var adapter: FriendAdapter
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentFriendBinding.inflate(inflater, container, false)
-
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val adapter = FriendAdapter(this, this)
-        binding.recyclerView.adapter = adapter
-        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        setAdapter()
+        observeState()
+        load()
+    }
 
+    private fun load() {
+        friendViewModel.load()
+    }
+
+    private fun observeState() {
         lifecycleScope.launch {
             friendViewModel.uiState.collect {
                 when (it) {
@@ -49,6 +56,12 @@ class FriendFragment : Fragment(), FriendProfileHolder.Event,
                 }
             }
         }
+    }
+
+    private fun setAdapter() {
+        adapter = FriendAdapter(this, this)
+        binding.recyclerView.adapter = adapter
+        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
     }
 
     override fun onDestroyView() {
