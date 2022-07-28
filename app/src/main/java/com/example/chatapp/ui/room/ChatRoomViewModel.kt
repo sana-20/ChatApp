@@ -25,7 +25,7 @@ class ChatRoomViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<UiState<List<ChatRoom>>>(UiState.Loading)
     val uiState: StateFlow<UiState<List<ChatRoom>>> = _uiState
 
-    init {
+    fun load() {
         viewModelScope.launch {
             chatRoomUseCase.invoke("chats")
                 .combine(getLastChatUseCase.invoke()) { result, chatEntity ->
