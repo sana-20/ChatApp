@@ -29,9 +29,10 @@ class ChatRoomViewModel @Inject constructor(
         viewModelScope.launch {
             chatRoomUseCase.invoke("chats")
                 .combine(getLastChatUseCase.invoke()) { result, chatEntity ->
+                    val message = if (chatEntity==null) "" else chatEntity.message.toString()
                     result.map { list ->
                         list.map {
-                            chatRoomMapper.map(it, chatEntity.message.toString())
+                            chatRoomMapper.map(it, message)
                         }
                     }
                 }
