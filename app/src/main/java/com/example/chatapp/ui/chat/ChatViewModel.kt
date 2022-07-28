@@ -62,27 +62,9 @@ class ChatViewModel @Inject constructor(
     }
 
     private fun saveMessage(text: String, type: MessageType) {
-        val chat = mapTextToChatEntity(text, type)
         CoroutineScope(Dispatchers.IO).launch {
-            addChatUseCase.invoke(chat)
+            addChatUseCase.invoke(AddChatUseCase.Param(text, type))
         }
     }
-
-    private fun mapTextToChatEntity(text: String, type: MessageType): ChatEntity {
-        return when (type) {
-            MessageType.RECEIVED_IMAGE -> ChatEntity(
-                message = "",
-                imageUrl = SocketMessageUtil.getReceivedMessage(text, "image"),
-                type = type
-            )
-            MessageType.RECEIVED_TEXT -> ChatEntity(
-                message = SocketMessageUtil.getReceivedMessage(text, "message"),
-                imageUrl = "",
-                type = type
-            )
-            MessageType.SEND -> ChatEntity(message = text, imageUrl = "", type = type)
-        }
-    }
-
 
 }
