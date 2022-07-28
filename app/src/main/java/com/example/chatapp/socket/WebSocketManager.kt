@@ -141,7 +141,6 @@ class WebSocketManager {
                 )
                 isConnect = false
                 messageListener.onConnectFailed()
-                reconnect()
             }
         }
     }
