@@ -2,7 +2,6 @@ package com.example.chatapp.ui.friend
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.chatapp.common.zip
 import com.example.chatapp.data.remote.BaseResult
 import com.example.chatapp.domain.GetFriendsUseCase
 import com.example.chatapp.ui.UiState
@@ -26,17 +25,13 @@ class FriendViewModel @Inject constructor(
 
     fun load() {
         viewModelScope.launch {
-            val friendsFlow = friendUseCase.invoke(FriendType.FRIENDS)
-            val favoriteFlow = friendUseCase.invoke(FriendType.FAVORITE)
-            val recommendFlow = friendUseCase.invoke(FriendType.RECOMMEND)
-
-            zip(friendsFlow, favoriteFlow, recommendFlow) { a, b, c ->
-                Triple(a, b, c)
-            }.flowOn(Dispatchers.IO)
+            friendUseCase.invoke()
+                .flowOn(Dispatchers.IO)
                 .catch {
                     _uiState.value = UiState.Error
                 }
                 .collect { triple ->
+
                     val (first, second, third) = triple
 
                     val list = mutableListOf<Friend>()
