@@ -7,16 +7,15 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.chatapp.data.local.MessageType
 import com.example.chatapp.databinding.FragmentChatBinding
 import com.example.chatapp.socket.MessageListener
-import com.example.chatapp.socket.SocketMessageUtil
 import com.example.chatapp.socket.WebSocketManager
 import com.example.chatapp.ui.UiState
 import com.example.chatapp.ui.chat.holder.ReceivedImageHolder
@@ -99,7 +98,9 @@ class ChatFragment : Fragment(), MessageListener, ReceivedTextHolder.Event,
 
     private fun observeState() {
         lifecycleScope.launch {
-            chatViewModel.uiState.collect {
+            chatViewModel.uiState
+                .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
+                .collect {
                 when (it) {
                     UiState.Error -> { }
                     UiState.Loading -> { }

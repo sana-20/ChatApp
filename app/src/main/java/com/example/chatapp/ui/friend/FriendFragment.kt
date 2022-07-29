@@ -6,7 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.chatapp.databinding.FragmentFriendBinding
 import com.example.chatapp.ui.UiState
@@ -48,11 +50,13 @@ class FriendFragment : Fragment(), FriendProfileHolder.Event,
 
     private fun observeState() {
         lifecycleScope.launch {
-            friendViewModel.uiState.collect {
-                when (it) {
-                    UiState.Error -> {}
-                    UiState.Loading -> {}
-                    is UiState.Success -> adapter.submitList(it.data)
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                friendViewModel.uiState.collect {
+                    when (it) {
+                        UiState.Error -> {}
+                        UiState.Loading -> {}
+                        is UiState.Success -> adapter.submitList(it.data)
+                    }
                 }
             }
         }
